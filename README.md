@@ -6,18 +6,19 @@ DeepAge est une application Python qui prédit l’âge en temps réel à partir
   - TensorFlow / Keras pour le modèle CNN
   - Pillow pour l’affichage des images dans Tkinter
 
-# Fonctionnalités
+## Fonctionnalités
 
 - Détection de visage en temps réel
 - Estimation de l’âge à partir du visage
+- Prédiction du genre à partir du visage
 - Affichage direct dans une interface graphique
 
-# Prérequis
+## Prérequis
 
 - Python 3.10+
 - Bibliothèques Python (numpy opencv-python tensorflow pillow matplotlib scikit-learn)
 
-# Télécharger le dataset
+## Télécharger le dataset
 
 Le projet utilise le dataset UTKFace pour entraîner le modèle :
 
@@ -29,7 +30,7 @@ La structure doit ressembler à :
 
 DeepAge/dataset/UTKFace/
 
-# Générer X.npy et y.npy
+## Générer X.npy et y_age.npy et y_genre.npy
 
 Pour préparer les données pour le modèle :
 
@@ -38,24 +39,24 @@ Assurez-vous que le dataset est bien placé.
 Exécuter le script preparer_donnees.py : python prepare_data.py
 
 
-Ce script crée : X.npy c'est les images prétraitées et y.npy c'est le label d’âge
+Ce script crée : X.npy c'est les images prétraitées et y_age.npy c'est le label d’âge et y_aenre.npy c'est le label du genre
 
 # Entraîner le modèle
 
-Vérifiez que X.npy et y.npy sont présents.
+Vérifiez que X.npy et y_age.npy et y_genre.npt sont présents.
 
 Exécuter le script train_model.py : python train_model.py
 
 
 Le modèle CNN sera entraîné sur les données.
 
-Après entraînement, un fichier age_model.h5 sera créé dans le dossier du projet.
+Après entraînement, un fichier age_genre_model.h5 sera créé dans le dossier du projet.
 
 # Lancer l’application
 
 Assurez-vous d’avoir :
 
-age_model.h5
+age_genre_model.h5
 
 haarcascade_frontalface_default.xml
 
