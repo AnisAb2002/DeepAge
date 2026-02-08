@@ -3,7 +3,7 @@ L'application DeepAge charge un modèle entrainé pour prédire les ages
 et capte avec la caméra en temps ton visage et prédit ton age
 
 - Chargement du modèle IA
-    model = tf.keras.models.load_model("age_model.h5")
+    model = tf.keras.models.load_model("age_genre_model.h5")
     déjà entrainé gràce à train_model.py et aux données dans dataset
 
 - Détecteur de visage :
@@ -39,7 +39,7 @@ L'application est une classe.
             on détecte le visage dans cette image (frame)
                 faces = face_cascade.detectMultiScale(
                     gris,
-                    1.3,  facteur d’échelle
+                    1.3,  facteur d'échelle
                     5,    précision
                     minSize=(80, 80)  taille minimale du visage
                 )
@@ -54,14 +54,16 @@ L'application est une classe.
                 np.reshape(face, (1,64,64,3))
 
             Prédiction 
-                age = model.predict(face)[0][0]
+            age, genre = model.predict(face, verbose=0)
+            age = age[0][0]
+            genre = genre[0][0]
 
 
             on affiche un rectangle vert avec l'age prédit
                 cv2.rectangle(...)
                 cv2.putText(
                     ...
-                   f"Age: {int(age)}"
+                   f"Age: {int(age)} | Genre : {genre_label}"
                    ...)
 
             pour afficher sur tkinter on transforme l'image
@@ -89,7 +91,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 
 # Charger modèle IA
-model = tf.keras.models.load_model("age_model.h5")
+model = tf.keras.models.load_model("age_genre_model.h5")
 
 # Détecteur visage
 mon_visage = cv2.CascadeClassifier(
@@ -103,7 +105,7 @@ class DeepAgeApp:
 
     def __init__(self, root):
         self.root = root
-        self.root.title("DeepAge - Prédiction de l'age")
+        self.root.title("DeepAge - Prédiction de l'age et du genre")
         self.root.geometry("1080x720")
 
         self.btn_demarrer = tk.Button(
@@ -160,17 +162,21 @@ class DeepAgeApp:
             face = face / 255.0
             face = np.reshape(face, (1, taille, taille, 3))
 
-            age = model.predict(face, verbose=0)[0][0]
+            age, genre = model.predict(face, verbose=0)
+            age = age[0][0]
+            genre = genre[0][0]
+
+            genre_label = "M" if genre < 0.5 else "F"
 
             cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0), 2)
 
             cv2.putText(
                 frame,
-                f"Age: {int(age)}",
+                f"Age : {int(age)} | Genre : {genre_label}",
                 (x, y-10),
                 cv2.FONT_HERSHEY_SIMPLEX,
-                0.9,
-                (0,255,0),
+                0.8,
+                (20,255,20),
                 2
             )
 

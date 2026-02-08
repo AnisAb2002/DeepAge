@@ -1,5 +1,5 @@
 """
-Dans ce code on charge les données X et y
+Dans ce code on charge les données X et y_age et y_genre
 puis on les sépare en données train et test
 puis on entraine le modèle :
  - Sequential permet de créer un modèle couche par couche
@@ -59,64 +59,75 @@ puis on entraine le modèle :
 """
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Model
 from tensorflow.keras.layers import (
     Conv2D, MaxPooling2D,
-    Flatten, Dense, Dropout
+    Flatten, Dense, Dropout, Input
 )
 from tensorflow.keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 
 # Charger les données
 X = np.load("X.npy")
-y = np.load("y.npy")
+y_age = np.load("y_age.npy")
+y_genre = np.load("y_genre.npy")
 
 # Séparation train / test
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
+X_train, X_test, y_age_train, y_age_test, y_genre_train, y_genre_test = train_test_split(
+    X, y_age, y_genre, test_size=0.2, random_state=42
 )
 """
         
     """
 # Modèle CNN
-model = Sequential([
+entrees = Input(shape=(64,64,3))
 
-    Conv2D(32, (3,3), activation='relu', input_shape=(64,64,3)),
-    MaxPooling2D(2,2),
+x = Conv2D(32, (3,3), activation='relu')(entrees)
+x = MaxPooling2D(2,2)(x)
 
-    
+x = Conv2D(64, (3,3), activation='relu')(x)
+x = MaxPooling2D(2,2)(x)
 
-    Conv2D(64, (3,3), activation='relu'),
-    MaxPooling2D(2,2),
+x = Conv2D(128, (3,3), activation='relu')(x)
+x = MaxPooling2D(2,2)(x)
 
-    Conv2D(128, (3,3), activation='relu'),
-    MaxPooling2D(2,2),
+x = Flatten()(x)
+x = Dense(128, activation='relu')(x)
+x = Dropout(0.5)(x)
 
-    Flatten(),
+# Sorties
+age_sortie = Dense(1, activation='linear', name="age")(x)
+genre_sortie = Dense(1, activation='sigmoid', name="genre")(x)
 
-    Dense(128, activation='relu'),
-    Dropout(0.5),
-
-    Dense(1, activation='linear')
-])
+model = Model(inputs=entrees, outputs=[age_sortie, genre_sortie])
 
 model.compile(
-    optimizer=Adam(learning_rate=0.001),
-    loss="mean_absolute_error",
-    metrics=["mae"]
+    optimizer=Adam(0.001),
+    loss={
+        "age": "mean_absolute_error",
+        "genre": "binary_crossentropy"
+    },
+    metrics={
+        "age": "mae",
+        "genre": "accuracy"
+    }
 )
 
 model.summary()
 
 # Entraînement
 history = model.fit(
-    X_train, y_train,
-    validation_data=(X_test, y_test),
+    X_train,
+    {"age": y_age_train, "genre": y_genre_train},
+    validation_data=(
+        X_test,
+        {"age": y_age_test, "genre": y_genre_test}
+    ),
     epochs=25,
     batch_size=32
 )
 
 # Sauvegarde
-model.save("age_model.h5")
+model.save("age_genre_model.h5")
 
-print("Modèle sauvegardé : age_model.h5")
+print("Modèle sauvegardé : age_genre_model.h5")

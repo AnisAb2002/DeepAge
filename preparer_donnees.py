@@ -4,6 +4,7 @@ on lit le chemin du dataset chemin = "dataset/UTKFace"
     son format est âge_genre_ethnie_date.jpg
     
     et age = int(fichier.split("_")[0]) récupère l'age.
+        genre = int(fichier.split("_")[1]) pour le genre
 
 met la taille des images à 64 pour plus rapidité et moins de mémoire
 
@@ -35,10 +36,12 @@ taille = 64
 
 images = []
 ages = []
+genres = []
 
 for fichier in os.listdir(chemin):
     try:
         age = int(fichier.split("_")[0])
+        genre = int(fichier.split("_")[1])
 
         img_chemin = os.path.join(chemin, fichier)
         img = cv2.imread(img_chemin)
@@ -51,15 +54,19 @@ for fichier in os.listdir(chemin):
 
         images.append(img)
         ages.append(age)
+        genres.append(genre)
 
     except:
         continue
 
 X = np.array(images)
-y = np.array(ages)
+y_age = np.array(ages)
+y_genre = np.array(genres)
 
 print("Images:", X.shape)
-print("Ages:", y.shape)
+print("Ages:", y_age.shape)
+print("Genre:", y_genre.shape)
 
 np.save("X.npy", X)
-np.save("y.npy", y)
+np.save("y_age.npy", y_age)
+np.save("y_genre.npy", y_genre)
