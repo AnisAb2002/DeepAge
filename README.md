@@ -55,7 +55,7 @@ La structure doit ressembler à :
 
 DeepAge/dataset_emotion/
 
-## Générer X_test_emo.npy, X_train_emo.npy, y_test_emo.npy et y_train_emo.npy
+### Générer X_test_emo.npy, X_train_emo.npy, y_test_emo.npy et y_train_emo.npy
 
 Pour préparer les données pour le modèle :
 
